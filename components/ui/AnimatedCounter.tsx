@@ -23,19 +23,22 @@ export default function AnimatedCounter({
   useEffect(() => {
     if (!isInView) return;
 
-    let start = 0;
-    const increment = target / (duration * 60);
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= target) {
-        setCount(target);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(start));
-      }
-    }, 1000 / 60);
+    const startTime = performance.now();
+    const totalMs = duration * 1000;
+    let rafId: number;
 
-    return () => clearInterval(timer);
+    const update = (now: number) => {
+      const progress = Math.min((now - startTime) / totalMs, 1);
+      // Ease-out cubic — fast start, smooth finish
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(eased * target));
+      if (progress < 1) {
+        rafId = requestAnimationFrame(update);
+      }
+    };
+
+    rafId = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(rafId);
   }, [isInView, target, duration]);
 
   return (

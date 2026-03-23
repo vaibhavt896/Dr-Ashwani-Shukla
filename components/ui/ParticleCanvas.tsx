@@ -35,11 +35,13 @@ export default function ParticleCanvas() {
     if (!ctx) return;
 
     let animId: number;
+    let isVisible = true;
+    let mouseMoveRaf: number | null = null;
     const mouse = { x: -9999, y: -9999 };
 
     // Retina-aware sizing
     const resize = () => {
-      const dpr = window.devicePixelRatio || 1;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2); // cap at 2x for performance
       const w = canvas.offsetWidth;
       const h = canvas.offsetHeight;
       canvas.width = w * dpr;
@@ -53,18 +55,30 @@ export default function ParticleCanvas() {
     const W = () => canvas.offsetWidth;
     const H = () => canvas.offsetHeight;
 
+    // Throttle mousemove via RAF — prevents 100+ calls/sec
     const onMouse = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mouse.x = e.clientX - rect.left;
-      mouse.y = e.clientY - rect.top;
+      if (mouseMoveRaf) return;
+      mouseMoveRaf = requestAnimationFrame(() => {
+        const rect = canvas.getBoundingClientRect();
+        mouse.x = e.clientX - rect.left;
+        mouse.y = e.clientY - rect.top;
+        mouseMoveRaf = null;
+      });
     };
     const onMouseLeave = () => { mouse.x = -9999; mouse.y = -9999; };
 
-    window.addEventListener("mousemove", onMouse);
+    window.addEventListener("mousemove", onMouse, { passive: true });
     canvas.addEventListener("mouseleave", onMouseLeave);
 
-    // Build particle field
-    const count = Math.min(65, Math.floor((W() * H()) / 16000));
+    // Pause animation when canvas is off-screen
+    const observer = new IntersectionObserver(
+      (entries) => { isVisible = entries[0].isIntersecting; },
+      { threshold: 0 }
+    );
+    observer.observe(canvas);
+
+    // Fewer particles — from 65 down to ~35 max (still looks great)
+    const count = Math.min(35, Math.floor((W() * H()) / 20000));
     const particles: Particle[] = Array.from({ length: count }, () => ({
       x: Math.random() * W(),
       y: Math.random() * H(),
@@ -94,6 +108,11 @@ export default function ParticleCanvas() {
     let t = 0;
 
     const animate = () => {
+      animId = requestAnimationFrame(animate);
+
+      // Skip draw when off-screen — saves significant CPU
+      if (!isVisible) return;
+
       ctx.clearRect(0, 0, W(), H());
       t += 0.012;
 
@@ -111,11 +130,9 @@ export default function ParticleCanvas() {
           p.vy += (dy / dist) * force * 60;
         }
 
-        // Velocity damping
         p.vx *= 0.978;
         p.vy *= 0.978;
 
-        // Boundary bounce with fade-in
         p.x += p.vx;
         p.y += p.vy;
         if (p.x < 0) { p.x = 0; p.vx *= -1; }
@@ -125,30 +142,21 @@ export default function ParticleCanvas() {
 
         const [r, g, b] = COLORS[p.colorIdx];
 
-        // Draw connections first (behind particles)
+        // Connections — reduced threshold 110→80 cuts O(n²) work significantly
         for (let j = i + 1; j < particles.length; j++) {
           const p2 = particles[j];
           const ex = p.x - p2.x;
           const ey = p.y - p2.y;
-          const d = Math.sqrt(ex * ex + ey * ey);
-          if (d < 110) {
+          const d2 = ex * ex + ey * ey;
+          if (d2 < 6400) { // 80² = 6400, avoids sqrt on every pair
+            const d = Math.sqrt(d2);
+            const alpha = (1 - d / 80) * 0.12;
             const [r2, g2, b2] = COLORS[p2.colorIdx];
-            const alpha = (1 - d / 110) * 0.12;
-            const mx = (p.x + p2.x) / 2;
-            const my = (p.y + p2.y) / 2;
-            const grad = ctx.createLinearGradient(p.x, p.y, p2.x, p2.y);
-            grad.addColorStop(0, `rgba(${r},${g},${b},${alpha})`);
-            grad.addColorStop(0.5, `rgba(${(r + r2) >> 1},${(g + g2) >> 1},${(b + b2) >> 1},${alpha * 1.4})`);
-            grad.addColorStop(1, `rgba(${r2},${g2},${b2},${alpha})`);
+            // Simple line instead of gradient+quadratic curve (much cheaper)
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
-            // Slight curve through midpoint for organic feel
-            ctx.quadraticCurveTo(
-              mx + Math.sin(t + i) * 4,
-              my + Math.cos(t + j) * 4,
-              p2.x, p2.y
-            );
-            ctx.strokeStyle = grad;
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(${(r + r2) >> 1},${(g + g2) >> 1},${(b + b2) >> 1},${alpha})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
           }
@@ -163,7 +171,6 @@ export default function ParticleCanvas() {
           ctx.strokeStyle = `rgba(${r},${g},${b},${p.opacity * 0.6})`;
           ctx.lineWidth = 0.7;
           ctx.stroke();
-          // Inner dot
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size * 0.5, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(${r},${g},${b},${p.opacity})`;
@@ -175,20 +182,20 @@ export default function ParticleCanvas() {
           ctx.fill();
         }
       });
-
-      animId = requestAnimationFrame(animate);
     };
 
     animate();
 
     const onResize = () => { resize(); };
-    window.addEventListener("resize", onResize);
+    window.addEventListener("resize", onResize, { passive: true });
 
     return () => {
       cancelAnimationFrame(animId);
+      if (mouseMoveRaf) cancelAnimationFrame(mouseMoveRaf);
       window.removeEventListener("mousemove", onMouse);
       window.removeEventListener("resize", onResize);
       canvas.removeEventListener("mouseleave", onMouseLeave);
+      observer.disconnect();
     };
   }, []);
 

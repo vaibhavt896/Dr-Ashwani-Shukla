@@ -37,9 +37,9 @@ const clinics = [
     timings: "Mon–Fri: 2 PM–7 PM",
     timingsWeekend: "Sat–Sun: 2 PM–5 PM",
     mapUrl: "https://www.google.com/maps/search/?api=1&query=Shweta+Child+Care+Clinic+Rambagh+Kanpur",
-    // OpenStreetMap embed — bbox: west,south,east,north | marker: lat,lon
-    embedUrl: "https://www.openstreetmap.org/export/embed.html?bbox=80.3399%2C26.4577%2C80.3599%2C26.4777&layer=mapnik&marker=26.4677%2C80.3499",
-    osmLink: "https://www.openstreetmap.org/?mlat=26.4677&mlon=80.3499#map=16/26.4677/80.3499",
+    // Google Maps coordinate embed — no API key required
+    embedUrl: "https://maps.google.com/maps?q=26.4677,80.3499&z=16&output=embed",
+    osmLink: "https://www.google.com/maps/search/?api=1&query=Shweta+Child+Care+Clinic+Rambagh+Kanpur",
     whatsapp: "919918601012",
     gradient: "from-sky to-sky-dark",
     accentRgb: "52,152,219",
@@ -54,8 +54,9 @@ const clinics = [
     timings: "Mon–Fri: 2 PM–7 PM",
     timingsWeekend: "Sat–Sun: 2 PM–5 PM",
     mapUrl: "https://www.google.com/maps/search/?api=1&query=Shweta+Child+Care+Clinic+Barra+Kanpur",
-    embedUrl: "https://www.openstreetmap.org/export/embed.html?bbox=80.3688%2C26.3850%2C80.3888%2C26.4050&layer=mapnik&marker=26.3950%2C80.3788",
-    osmLink: "https://www.openstreetmap.org/?mlat=26.3950&mlon=80.3788#map=16/26.3950/80.3788",
+    // Google Maps coordinate embed — no API key required
+    embedUrl: "https://maps.google.com/maps?q=26.3950,80.3788&z=16&output=embed",
+    osmLink: "https://www.google.com/maps/search/?api=1&query=Shweta+Child+Care+Clinic+Barra+Kanpur",
     whatsapp: "919918601013",
     gradient: "from-honey to-honey-dark",
     accentRgb: "240,168,48",
@@ -108,13 +109,14 @@ export default function ContactPage() {
                 >
                   {/* ── LIVE MAP VIEW ── */}
                   <div className="relative h-[220px] sm:h-[260px] bg-[#e8eff4] overflow-hidden">
-                    {/* Real OpenStreetMap iframe */}
+                    {/* Google Maps iframe — coordinate-based, no API key */}
                     <iframe
                       src={clinic.embedUrl}
                       className="absolute inset-0 w-full h-full border-0"
                       style={{ filter: "saturate(1.1) contrast(1.02)" }}
                       allowFullScreen
                       loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
                       title={`Map – ${clinic.name}`}
                     />
 
