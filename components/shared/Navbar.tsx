@@ -204,7 +204,7 @@ export default function Navbar() {
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
               className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-white shadow-2xl"
             >
-              <div className="p-6 pt-20 flex flex-col gap-2">
+              <div className="p-5 pt-[72px] flex flex-col gap-2">
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}

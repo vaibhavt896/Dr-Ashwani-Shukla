@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import AnimatedSection from "@/components/ui/AnimatedSection";
+import TiltCard from "@/components/ui/TiltCard";
 import {
   Baby,
   Syringe,
@@ -24,6 +25,7 @@ const services = [
     color: "from-coral/20 to-coral/5",
     iconColor: "text-coral",
     iconBg: "bg-coral/10",
+    glowRgb: "255,107,107",
     featured: true,
   },
   {
@@ -34,6 +36,7 @@ const services = [
     color: "from-forest/20 to-forest/5",
     iconColor: "text-forest",
     iconBg: "bg-forest/10",
+    glowRgb: "46,204,113",
   },
   {
     icon: Stethoscope,
@@ -43,6 +46,7 @@ const services = [
     color: "from-sky/20 to-sky/5",
     iconColor: "text-sky",
     iconBg: "bg-sky/10",
+    glowRgb: "52,152,219",
   },
   {
     icon: TrendingUp,
@@ -52,6 +56,7 @@ const services = [
     color: "from-honey/20 to-honey/5",
     iconColor: "text-honey-dark",
     iconBg: "bg-honey/10",
+    glowRgb: "240,168,48",
   },
   {
     icon: HeartPulse,
@@ -61,6 +66,7 @@ const services = [
     color: "from-coral/20 to-coral/5",
     iconColor: "text-coral",
     iconBg: "bg-coral/10",
+    glowRgb: "255,107,107",
   },
   {
     icon: Users,
@@ -70,6 +76,7 @@ const services = [
     color: "from-sky/20 to-sky/5",
     iconColor: "text-sky",
     iconBg: "bg-sky/10",
+    glowRgb: "52,152,219",
   },
   {
     icon: Wind,
@@ -79,6 +86,7 @@ const services = [
     color: "from-forest/20 to-forest/5",
     iconColor: "text-forest",
     iconBg: "bg-forest/10",
+    glowRgb: "46,204,113",
   },
   {
     icon: Siren,
@@ -88,18 +96,33 @@ const services = [
     color: "from-coral/20 to-coral/5",
     iconColor: "text-coral",
     iconBg: "bg-coral/10",
+    glowRgb: "255,107,107",
   },
 ];
 
 export default function ServicesGrid() {
   return (
-    <section className="relative py-24 lg:py-32 bg-sunshine overflow-hidden">
+    <section className="relative py-16 sm:py-24 lg:py-32 bg-sunshine overflow-hidden">
       {/* Background decor */}
-      <div className="absolute top-20 right-0 w-80 h-80 bg-sky/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 left-0 w-80 h-80 bg-honey/5 rounded-full blur-3xl" />
+      <div className="absolute top-20 right-0 w-80 h-80 bg-sky/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-20 left-0 w-80 h-80 bg-honey/5 rounded-full blur-3xl pointer-events-none" />
+
+      {/* === WORLD-CLASS: Subtle animated mesh grid === */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        animate={{ opacity: [0.015, 0.03, 0.015] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(52,152,219,0.5) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(52,152,219,0.5) 1px, transparent 1px)
+          `,
+          backgroundSize: "80px 80px",
+        }}
+      />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <AnimatedSection className="text-center mb-16">
+        <AnimatedSection className="text-center mb-10 sm:mb-16">
           <div className="inline-flex items-center gap-2 bg-white rounded-full px-4 py-2 mb-6 shadow-sm">
             <Stethoscope className="w-4 h-4 text-sky" />
             <span className="text-sm font-semibold text-sky">Our Services</span>
@@ -107,7 +130,7 @@ export default function ServicesGrid() {
           <h2 className="font-[var(--font-display)] text-3xl sm:text-4xl lg:text-5xl font-extrabold text-midnight mb-4">
             Complete Pediatric Care
           </h2>
-          <p className="text-lg text-slate max-w-2xl mx-auto">
+          <p className="text-sm sm:text-lg text-slate max-w-2xl mx-auto">
             From your baby&apos;s first breath to their teenage years — every stage of
             childhood, expertly covered.
           </p>
@@ -123,50 +146,88 @@ export default function ServicesGrid() {
               transition={{ delay: i * 0.08, duration: 0.5 }}
               className={service.featured ? "sm:col-span-2 lg:col-span-2 sm:row-span-2" : ""}
             >
-              <Link href={service.href} className="block h-full group">
-                <div
-                  className={`relative h-full bg-gradient-to-br ${service.color} rounded-3xl p-6 lg:p-8 border border-white/60 hover:border-white hover:shadow-xl transition-all duration-500 overflow-hidden ${
-                    service.featured ? "flex flex-col justify-between min-h-[320px]" : ""
-                  }`}
-                >
-                  {/* Hover shine effect */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-br from-white/40 via-transparent to-transparent" />
+              {/* === WORLD-CLASS: 3D tilt wrapper for each card === */}
+              <TiltCard
+                intensity={service.featured ? 8 : 12}
+                wrapperClassName="h-full"
+                className="h-full"
+              >
+                <Link href={service.href} className="block h-full group">
+                  <div
+                    className={`relative h-full bg-gradient-to-br ${service.color} rounded-3xl p-5 sm:p-6 lg:p-8 border border-white/60 hover:border-white hover:shadow-2xl transition-all duration-500 overflow-hidden ${
+                      service.featured ? "flex flex-col justify-between min-h-[260px] sm:min-h-[320px]" : ""
+                    }`}
+                  >
+                    {/* === WORLD-CLASS: Animated gradient glow on hover === */}
+                    <motion.div
+                      className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"
+                      style={{
+                        background: `radial-gradient(ellipse 80% 60% at 50% 100%, rgba(${service.glowRgb},0.12), transparent)`,
+                      }}
+                    />
 
-                  <div className="relative">
-                    <div
-                      className={`inline-flex w-12 h-12 ${
-                        service.featured ? "lg:w-16 lg:h-16" : ""
-                      } rounded-2xl ${service.iconBg} items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
-                    >
-                      <service.icon
-                        className={`w-6 h-6 ${
-                          service.featured ? "lg:w-8 lg:h-8" : ""
-                        } ${service.iconColor}`}
+                    {/* Hover shine sweep */}
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-br from-white/40 via-transparent to-transparent pointer-events-none rounded-3xl" />
+
+                    {/* === WORLD-CLASS: Featured card — animated border === */}
+                    {service.featured && (
+                      <motion.div
+                        className="absolute inset-0 rounded-3xl pointer-events-none"
+                        style={{
+                          background: "transparent",
+                          border: "1px solid transparent",
+                        }}
+                        animate={{
+                          boxShadow: [
+                            `0 0 0 0px rgba(${service.glowRgb},0)`,
+                            `0 0 0 2px rgba(${service.glowRgb},0.2)`,
+                            `0 0 0 0px rgba(${service.glowRgb},0)`,
+                          ],
+                        }}
+                        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
                       />
+                    )}
+
+                    <div className="relative">
+                      <div
+                        className={`inline-flex w-12 h-12 ${
+                          service.featured ? "lg:w-16 lg:h-16" : ""
+                        } rounded-2xl ${service.iconBg} items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
+                        style={{
+                          boxShadow: `0 0 0 0 rgba(${service.glowRgb},0)`,
+                          transition: "transform 0.3s, box-shadow 0.3s",
+                        }}
+                      >
+                        <service.icon
+                          className={`w-6 h-6 ${
+                            service.featured ? "lg:w-8 lg:h-8" : ""
+                          } ${service.iconColor}`}
+                        />
+                      </div>
+
+                      <h3
+                        className={`font-[var(--font-display)] font-bold text-midnight mb-2 ${
+                          service.featured ? "text-xl lg:text-2xl" : "text-base"
+                        }`}
+                      >
+                        {service.title}
+                      </h3>
+                      <p
+                        className={`text-slate leading-relaxed ${
+                          service.featured ? "text-base max-w-md" : "text-sm"
+                        }`}
+                      >
+                        {service.desc}
+                      </p>
                     </div>
 
-                    <h3
-                      className={`font-[var(--font-display)] font-bold text-midnight mb-2 ${
-                        service.featured ? "text-xl lg:text-2xl" : "text-base"
-                      }`}
-                    >
-                      {service.title}
-                    </h3>
-                    <p
-                      className={`text-slate leading-relaxed ${
-                        service.featured ? "text-base max-w-md" : "text-sm"
-                      }`}
-                    >
-                      {service.desc}
-                    </p>
+                    <div className="relative mt-4 flex items-center gap-2 text-sm font-semibold text-midnight group-hover:text-sky transition-colors">
+                      Learn more
+                      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                    </div>
                   </div>
-
-                  <div className="relative mt-4 flex items-center gap-2 text-sm font-semibold text-midnight group-hover:text-sky transition-colors">
-                    Learn more
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </div>
-              </Link>
+                </Link>
+              </TiltCard>
             </motion.div>
           ))}
         </div>

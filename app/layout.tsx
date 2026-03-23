@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import SmoothScroll from "@/components/shared/SmoothScroll";
+import WhatsAppButton from "@/components/ui/WhatsAppButton";
 
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
@@ -126,6 +127,7 @@ export default function RootLayout({
         <Navbar />
         <main className="flex-1">{children}</main>
         <Footer />
+        <WhatsAppButton />
       </body>
     </html>
   );

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, Calendar, Syringe, Star, Shield, Clock, MapPin, Award, Heart, Stethoscope } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
+import ParticleCanvas from "@/components/ui/ParticleCanvas";
 
 const floatingShapes = [
   { size: 80, color: "bg-sky/10", top: "10%", left: "5%", delay: 0 },
@@ -84,6 +85,72 @@ function useTypewriter() {
   return { wordIdx, displayed, phase };
 }
 
+// DNA double-helix SVG path generator
+function DnaHelix() {
+  const points = Array.from({ length: 18 }, (_, i) => i);
+  return (
+    <svg
+      className="absolute left-[2%] top-[5%] h-[90%] w-16 pointer-events-none opacity-[0.04]"
+      viewBox="0 0 60 600"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      {/* Strand A */}
+      <motion.path
+        d={points
+          .map((i) => {
+            const y = (i / (points.length - 1)) * 600;
+            const x = 30 + 22 * Math.sin((i / (points.length - 1)) * Math.PI * 5);
+            return `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
+          })
+          .join(" ")}
+        stroke="#3498DB"
+        strokeWidth="2"
+        fill="none"
+        strokeLinecap="round"
+        animate={{ strokeDashoffset: [0, -600] }}
+        strokeDasharray="600"
+        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+      />
+      {/* Strand B (offset by half period) */}
+      <motion.path
+        d={points
+          .map((i) => {
+            const y = (i / (points.length - 1)) * 600;
+            const x = 30 - 22 * Math.sin((i / (points.length - 1)) * Math.PI * 5);
+            return `${i === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`;
+          })
+          .join(" ")}
+        stroke="#F0A830"
+        strokeWidth="2"
+        fill="none"
+        strokeLinecap="round"
+        animate={{ strokeDashoffset: [0, -600] }}
+        strokeDasharray="600"
+        transition={{ duration: 8, repeat: Infinity, ease: "linear", delay: 0.3 }}
+      />
+      {/* Cross rungs */}
+      {points.filter((_, i) => i % 2 === 1).map((i) => {
+        const y = (i / (points.length - 1)) * 600;
+        const xA = 30 + 22 * Math.sin((i / (points.length - 1)) * Math.PI * 5);
+        const xB = 30 - 22 * Math.sin((i / (points.length - 1)) * Math.PI * 5);
+        return (
+          <line
+            key={i}
+            x1={xA.toFixed(1)}
+            y1={y.toFixed(1)}
+            x2={xB.toFixed(1)}
+            y2={y.toFixed(1)}
+            stroke="#2ECC71"
+            strokeWidth="1"
+            strokeOpacity="0.6"
+          />
+        );
+      })}
+    </svg>
+  );
+}
+
 
 export default function Hero() {
   const { wordIdx, displayed, phase } = useTypewriter();
@@ -112,7 +179,42 @@ export default function Hero() {
   }, [mouseX, mouseY]);
 
   return (
-    <section className="relative h-[calc(100vh-72px)] max-h-[900px] min-h-[600px] flex items-center overflow-hidden bg-gradient-to-br from-sunshine via-white to-peach/30" ref={containerRef}>
+    <section
+      className="relative h-[calc(100vh-72px)] max-h-[900px] min-h-[500px] sm:min-h-[580px] md:min-h-[600px] flex items-center overflow-hidden bg-gradient-to-br from-sunshine via-white to-peach/30"
+      ref={containerRef}
+    >
+      {/* === WORLD-CLASS LAYER 1: Interactive particle network === */}
+      <ParticleCanvas />
+
+      {/* === WORLD-CLASS LAYER 2: DNA helix left edge === */}
+      <DnaHelix />
+
+      {/* === WORLD-CLASS LAYER 3: Animated radial aurora behind hero === */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 70% 60% at 20% 50%, rgba(52,152,219,0.07), transparent 70%)",
+        }}
+        animate={{
+          opacity: [0.6, 1, 0.6],
+          scale: [1, 1.04, 1],
+        }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <motion.div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse 50% 70% at 80% 60%, rgba(240,168,48,0.06), transparent 65%)",
+        }}
+        animate={{
+          opacity: [0.5, 1, 0.5],
+          scale: [1, 1.06, 1],
+        }}
+        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+      />
+
       {/* Floating geometric shapes */}
       {floatingShapes.map((shape, i) => (
         <motion.div
@@ -134,7 +236,7 @@ export default function Hero() {
 
       {/* Grid pattern overlay */}
       <div
-        className="absolute inset-0 opacity-[0.03]"
+        className="absolute inset-0 opacity-[0.03] pointer-events-none"
         style={{
           backgroundImage: `radial-gradient(circle, #1C2D3F 1px, transparent 1px)`,
           backgroundSize: "40px 40px",
@@ -154,6 +256,26 @@ export default function Hero() {
           animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.3, 0.15] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
           className="absolute right-1/3 bottom-1/4 w-56 h-56 rounded-full bg-honey/20 blur-3xl"
+        />
+
+        {/* === WORLD-CLASS: Rotating halo ring around doctor === */}
+        <motion.div
+          className="absolute left-[22%] top-[8%] bottom-[8%] right-[4%] rounded-full pointer-events-none"
+          style={{
+            border: "1px dashed rgba(52,152,219,0.12)",
+            borderRadius: "50%",
+          }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
+        />
+        <motion.div
+          className="absolute left-[18%] top-[5%] bottom-[5%] right-[1%] rounded-full pointer-events-none"
+          style={{
+            border: "1px dashed rgba(240,168,48,0.08)",
+            borderRadius: "50%",
+          }}
+          animate={{ rotate: -360 }}
+          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
         />
 
         {/* Left edge fade — blends into page */}
@@ -186,41 +308,137 @@ export default function Hero() {
           />
         </motion.div>
 
-        {/* Credential badges — hugging the doctor's figure edges */}
-        {[
-          { label: "NICU",     sub: "Specialist",    color: "from-coral/90 to-rose-500/90",     icon: Heart,       top: "14%", left: "18%" },
-          { label: "25+ Yrs",  sub: "Experience",    color: "from-sky/90 to-blue-500/90",       icon: Award,       top: "34%", left: "12%" },
-          { label: "PICU",     sub: "Expert",         color: "from-forest/90 to-emerald-600/90", icon: Stethoscope, top: "57%", left: "16%" },
-          { label: "4.1 ★",   sub: "Google Rating",  color: "from-honey/90 to-amber-500/90",    icon: Star,        top: "20%", right: "14%" },
-          { label: "MD",       sub: "Pediatrics",     color: "from-midnight/80 to-slate-700/90", icon: Award,       top: "44%", right: "12%" },
-        ].map((badge, i) => (
-          <motion.div
-            key={badge.label}
-            className="absolute pointer-events-auto z-30"
-            style={{ top: badge.top, left: (badge as {left?: string}).left, right: (badge as {right?: string}).right }}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1.0 + i * 0.18, type: "spring", stiffness: 200 }}
-            whileHover={{ scale: 1.12 }}
-          >
+        {/* ── Credential badges with arrow connectors ── */}
+        {(
+          [
+            {
+              label: "NICU",
+              sub: "Specialist",
+              color: "from-coral to-rose-500",
+              shadowColor: "rgba(255,107,107,0.45)",
+              icon: Heart,
+              top: "12%",
+              left: "14%",
+              floatY: [-6, 0, -6],
+              arrowDir: "right" as const,
+            },
+            {
+              label: "25+ Yrs",
+              sub: "Experience",
+              color: "from-sky to-blue-500",
+              shadowColor: "rgba(52,152,219,0.45)",
+              icon: Award,
+              top: "33%",
+              left: "8%",
+              floatY: [-4, 4, -4],
+              arrowDir: "right" as const,
+            },
+            {
+              label: "PICU",
+              sub: "Expert",
+              color: "from-forest to-emerald-600",
+              shadowColor: "rgba(46,204,113,0.45)",
+              icon: Stethoscope,
+              top: "56%",
+              left: "12%",
+              floatY: [-5, 2, -5],
+              arrowDir: "right" as const,
+            },
+            {
+              label: "4.1 ★",
+              sub: "Google Rating",
+              color: "from-honey to-amber-500",
+              shadowColor: "rgba(240,168,48,0.45)",
+              icon: Star,
+              top: "18%",
+              right: "10%",
+              floatY: [-6, 1, -6],
+              arrowDir: "left" as const,
+            },
+            {
+              label: "MD",
+              sub: "Pediatrics",
+              color: "from-midnight to-slate-600",
+              shadowColor: "rgba(28,45,63,0.45)",
+              icon: Award,
+              top: "43%",
+              right: "8%",
+              floatY: [-4, 3, -4],
+              arrowDir: "left" as const,
+            },
+          ] as const
+        ).map((badge, i) => {
+          const isRight = badge.arrowDir === "right";
+          return (
             <motion.div
-              animate={{ y: [0, -5, 0] }}
-              transition={{ duration: 3 + i * 0.5, repeat: Infinity, ease: "easeInOut", delay: i * 0.4 }}
-              className={`relative flex items-center gap-2 bg-gradient-to-br ${badge.color} text-white px-3.5 py-2.5 rounded-2xl shadow-xl backdrop-blur-sm border border-white/25`}
+              key={badge.label}
+              className="absolute pointer-events-auto z-30 flex items-center"
+              style={{
+                top: badge.top,
+                left: "left" in badge ? badge.left : undefined,
+                right: "right" in badge ? badge.right : undefined,
+                flexDirection: isRight ? "row" : "row-reverse",
+              }}
+              initial={{ opacity: 0, x: isRight ? -30 : 30, scale: 0.8 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              transition={{ delay: 1.0 + i * 0.2, type: "spring", stiffness: 180, damping: 18 }}
+              whileHover={{ scale: 1.08 }}
             >
+              {/* Badge pill */}
               <motion.div
-                animate={{ scale: [1, 1.5, 1], opacity: [0.7, 0.2, 0.7] }}
-                transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
-                className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-white rounded-full"
-              />
-              <badge.icon className="w-4 h-4 flex-shrink-0" />
-              <div>
-                <p className="font-extrabold text-xs leading-none">{badge.label}</p>
-                <p className="text-white/75 text-[10px] leading-none mt-0.5">{badge.sub}</p>
+                animate={{ y: [...badge.floatY] }}
+                transition={{ duration: 3.2 + i * 0.4, repeat: Infinity, ease: "easeInOut", delay: i * 0.35 }}
+                className={`relative flex items-center gap-2.5 bg-gradient-to-br ${badge.color} text-white pl-3 pr-4 py-2.5 rounded-2xl shadow-lg backdrop-blur-sm border border-white/20`}
+                style={{ boxShadow: `0 8px 24px -4px ${badge.shadowColor}` }}
+              >
+                {/* Live pulse dot */}
+                <span className="relative flex-shrink-0">
+                  <motion.span
+                    className="absolute inline-flex w-full h-full rounded-full bg-white/60"
+                    animate={{ scale: [1, 2.2, 1], opacity: [0.6, 0, 0.6] }}
+                    transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.3 }}
+                  />
+                  <span className="relative inline-flex w-2 h-2 rounded-full bg-white" />
+                </span>
+
+                <badge.icon className="w-4 h-4 flex-shrink-0 opacity-90" />
+                <div>
+                  <p className="font-extrabold text-xs leading-none tracking-wide">{badge.label}</p>
+                  <p className="text-white/70 text-[10px] leading-none mt-0.5">{badge.sub}</p>
+                </div>
+              </motion.div>
+
+              {/* Arrow connector — looping march animation */}
+              <div
+                className="flex items-center mx-1.5 overflow-hidden"
+                style={{ width: 36, flexDirection: isRight ? "row" : "row-reverse" }}
+              >
+                {[0, 1, 2].map((dot) => (
+                  <motion.svg
+                    key={dot}
+                    width="10"
+                    height="10"
+                    viewBox="0 0 10 10"
+                    className="flex-shrink-0"
+                    style={{ marginRight: isRight ? 2 : 0, marginLeft: isRight ? 0 : 2 }}
+                    animate={{ opacity: [0, 1, 0], x: isRight ? ["-4px", "0px", "4px"] : ["4px", "0px", "-4px"] }}
+                    transition={{
+                      duration: 1.0,
+                      repeat: Infinity,
+                      ease: "easeInOut",
+                      delay: dot * 0.22,
+                    }}
+                  >
+                    <polygon
+                      points={isRight ? "0,1 9,5 0,9" : "9,1 0,5 9,9"}
+                      fill="rgba(52,152,219,0.55)"
+                    />
+                  </motion.svg>
+                ))}
               </div>
             </motion.div>
-          </motion.div>
-        ))}
+          );
+        })}
 
         {/* Name tag — sits at bottom center of image */}
         <motion.div
@@ -240,7 +458,7 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10 w-full">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-10 w-full">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
           {/* Left content */}
           <div>
@@ -249,7 +467,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 mb-4 shadow-sm border border-sky/10"
+              className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-3 sm:px-4 py-1.5 sm:py-2 mb-3 sm:mb-4 shadow-sm border border-sky/10"
             >
               <span className="w-2 h-2 bg-forest rounded-full animate-pulse" />
               <span className="text-sm font-medium text-slate">
@@ -262,7 +480,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.15 }}
-              className="font-[var(--font-display)] text-4xl sm:text-5xl lg:text-5xl xl:text-6xl font-extrabold text-midnight leading-[1.08] mb-4"
+              className="font-[var(--font-display)] text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-midnight leading-[1.08] mb-4"
             >
               Every Child Deserves{" "}
               <span className="relative inline-block">
@@ -294,7 +512,7 @@ export default function Hero() {
                   {/* Animated underline */}
                   <motion.span
                     key={`underline-${wordIdx}`}
-                    className={`absolute -bottom-2 left-0 h-[5px] rounded-full ${currentWord.underline}`}
+                    className={`absolute -bottom-2 left-0 h-[3px] sm:h-[5px] rounded-full ${currentWord.underline}`}
                     initial={{ width: "0%" }}
                     animate={{ width: `${(displayed.length / currentWord.word.length) * 100}%` }}
                     transition={{ duration: 0.05, ease: "linear" }}
@@ -330,7 +548,7 @@ export default function Hero() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, delay: 0.3 }}
-              className="text-base lg:text-lg text-slate max-w-xl mb-6 leading-relaxed"
+              className="text-sm sm:text-base lg:text-lg text-slate max-w-xl mb-6 leading-relaxed"
             >
               <strong className="text-midnight">Dr. Ashwani Kumar Shukla</strong> — 25+ years of
               dedicated pediatric & neonatal care in Kanpur. Two clinics.
@@ -346,7 +564,7 @@ export default function Hero() {
             >
               <Link
                 href="/contact"
-                className="magnetic-btn group inline-flex items-center gap-2.5 bg-gradient-to-r from-honey to-honey-dark text-white font-bold text-base px-8 py-4 rounded-full shadow-xl shadow-honey/30 hover:shadow-honey/50 hover:scale-[1.02] transition-all duration-300"
+                className="magnetic-btn group inline-flex items-center gap-2.5 bg-gradient-to-r from-honey to-honey-dark text-white font-bold text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-4 rounded-full shadow-xl shadow-honey/30 hover:shadow-honey/50 hover:scale-[1.02] transition-all duration-300"
               >
                 <Calendar className="w-5 h-5" />
                 Book Appointment
@@ -354,7 +572,7 @@ export default function Hero() {
               </Link>
               <Link
                 href="/vaccination"
-                className="magnetic-btn group inline-flex items-center gap-2.5 bg-white text-midnight font-bold text-base px-8 py-4 rounded-full shadow-lg shadow-midnight/5 hover:shadow-midnight/10 border border-midnight/10 hover:border-sky/30 hover:text-sky transition-all duration-300"
+                className="magnetic-btn group inline-flex items-center gap-2.5 bg-white text-midnight font-bold text-sm sm:text-base px-6 sm:px-8 py-3 sm:py-4 rounded-full shadow-lg shadow-midnight/5 hover:shadow-midnight/10 border border-midnight/10 hover:border-sky/30 hover:text-sky transition-all duration-300"
               >
                 <Syringe className="w-5 h-5" />
                 Vaccination Schedule

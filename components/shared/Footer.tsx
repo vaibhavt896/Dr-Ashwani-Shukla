@@ -26,35 +26,35 @@ export default function Footer() {
   return (
     <footer className="bg-midnight text-white relative overflow-hidden">
       {/* Decorative blobs */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-sky/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-honey/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
+      <div className="absolute top-0 left-0 w-48 sm:w-64 lg:w-96 h-48 sm:h-64 lg:h-96 bg-sky/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-48 sm:w-64 lg:w-96 h-48 sm:h-64 lg:h-96 bg-honey/5 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
         {/* Top CTA */}
-        <div className="bg-gradient-to-r from-sky to-sky-dark rounded-3xl p-8 md:p-12 mb-16 relative overflow-hidden">
+        <div className="bg-gradient-to-r from-sky to-sky-dark rounded-3xl p-6 sm:p-8 md:p-12 mb-10 sm:mb-16 relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-4 right-4 w-32 h-32 border border-white/30 rounded-full" />
             <div className="absolute bottom-4 left-4 w-24 h-24 border border-white/20 rounded-full" />
           </div>
           <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
-              <h3 className="font-[var(--font-display)] text-2xl md:text-3xl font-bold mb-2">
+              <h3 className="font-[var(--font-display)] text-xl sm:text-2xl md:text-3xl font-bold mb-2">
                 Your child&apos;s health can&apos;t wait.
               </h3>
-              <p className="text-white/80 text-lg">
+              <p className="text-white/80 text-sm sm:text-base lg:text-lg">
                 Book an appointment or call us now for immediate consultation.
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
               <Link
                 href="/contact"
-                className="magnetic-btn inline-flex items-center justify-center gap-2 bg-white text-sky font-bold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transition-all"
+                className="magnetic-btn inline-flex items-center justify-center gap-2 bg-white text-sky font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-full shadow-lg hover:shadow-xl transition-all w-full sm:w-auto"
               >
                 Book Appointment
               </Link>
               <a
                 href="tel:+919918601012"
-                className="magnetic-btn inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm text-white font-bold px-8 py-4 rounded-full border border-white/20 hover:bg-white/20 transition-all"
+                className="magnetic-btn inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-sm text-white font-bold px-6 sm:px-8 py-3 sm:py-4 rounded-full border border-white/20 hover:bg-white/20 transition-all w-full sm:w-auto"
               >
                 <Phone className="w-5 h-5" />
                 Call Now
@@ -64,7 +64,7 @@ export default function Footer() {
         </div>
 
         {/* Links grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 lg:gap-12 mb-8 sm:mb-12">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-3 mb-4">

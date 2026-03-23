@@ -143,3 +143,218 @@ body {
 .magnetic-btn:active {
   transform: translateY(0);
 }
+
+/* ============================================================
+   WORLD-CLASS MOTION GRAPHICS — Additional Keyframes
+   ============================================================ */
+
+/* Aurora — multi-color background morph */
+@keyframes aurora {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: hue-rotate(0deg);
+  }
+  33% {
+    background-position: 100% 50%;
+    filter: hue-rotate(15deg);
+  }
+  66% {
+    background-position: 50% 0%;
+    filter: hue-rotate(-10deg);
+  }
+}
+
+/* Reveal up — blur + translate entrance */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(36px) scale(0.97);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
+  }
+}
+
+/* Character flip — 3D perspective per-letter reveal */
+@keyframes char-flip {
+  from {
+    opacity: 0;
+    transform: translateY(30px) rotateX(-60deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotateX(0deg);
+  }
+}
+
+/* Scan line — vertical sweep */
+@keyframes scan-line {
+  0% { top: 0%; opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* Liquid ripple — for button clicks */
+@keyframes liquid-ripple {
+  from {
+    transform: scale(0);
+    opacity: 0.6;
+  }
+  to {
+    transform: scale(4);
+    opacity: 0;
+  }
+}
+
+/* Orbit — circular path for satellite dots */
+@keyframes orbit {
+  from { transform: rotate(0deg) translateX(var(--orbit-r, 100px)) rotate(0deg); }
+  to   { transform: rotate(360deg) translateX(var(--orbit-r, 100px)) rotate(-360deg); }
+}
+
+/* Neon flicker — subtle text blink for call-to-action */
+@keyframes neon-flicker {
+  0%, 92%, 100% { opacity: 1; }
+  94%           { opacity: 0.85; }
+  96%           { opacity: 1; }
+  98%           { opacity: 0.9; }
+}
+
+/* Gradient text animation — shifting hue */
+@keyframes gradient-text {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+/* Glitch — subtle horizontal shake for emergency sections */
+@keyframes glitch-h {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-2px) skewX(0.5deg); }
+  40%       { transform: translateX(2px) skewX(-0.5deg); }
+  60%       { transform: translateX(-1px); }
+  80%       { transform: translateX(1px); }
+}
+
+/* Morph path — organic shape transition (extends blob) */
+@keyframes morph {
+  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: rotate(0deg) scale(1); }
+  25%       { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: rotate(2deg) scale(1.02); }
+  50%       { border-radius: 50% 60% 30% 60% / 30% 60% 70% 40%; transform: rotate(0deg) scale(0.98); }
+  75%       { border-radius: 60% 40% 60% 30% / 70% 40% 50% 60%; transform: rotate(-2deg) scale(1.01); }
+}
+
+/* Utility classes */
+.animate-aurora {
+  background-size: 300% 300%;
+  animation: aurora 10s ease infinite;
+}
+.animate-reveal-up {
+  animation: reveal-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-char-flip {
+  animation: char-flip 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: center bottom;
+  perspective: 400px;
+}
+.animate-scan-line {
+  position: absolute;
+  left: 0; right: 0; height: 1px;
+  animation: scan-line 4s linear infinite;
+}
+.animate-orbit {
+  animation: orbit 8s linear infinite;
+}
+.animate-neon-flicker {
+  animation: neon-flicker 4s ease-in-out infinite;
+}
+.animate-gradient-text {
+  background-size: 200% auto;
+  animation: gradient-text 4s ease infinite;
+}
+.animate-morph {
+  animation: morph 9s ease-in-out infinite;
+}
+
+/* Liquid button — ripple on click */
+.liquid-btn {
+  position: relative;
+  overflow: hidden;
+}
+.liquid-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255,255,255,0.3) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.liquid-btn:hover::after {
+  opacity: 1;
+}
+
+
+/* ============================================================
+   SCROLL REVEAL — base state (overridden by Framer Motion)
+   ============================================================ */
+.scroll-hidden {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+/* ============================================================
+   CARD 3D — ensure perspective inheritance
+   ============================================================ */
+.card-3d-wrap {
+  perspective: 900px;
+}
+.card-3d-inner {
+  transform-style: preserve-3d;
+  transition: transform 0.08s linear;
+}
+
+/* ============================================================
+   GLOW BORDER — animated conic-gradient rotating border
+   ============================================================ */
+@property --angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotate-border {
+  to { --angle: 360deg; }
+}
+
+.glow-border {
+  position: relative;
+}
+.glow-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--angle),
+    transparent 70%,
+    rgba(52,152,219,0.6) 80%,
+    rgba(240,168,48,0.6) 90%,
+    transparent 100%
+  );
+  animation: rotate-border 3s linear infinite;
+  z-index: -1;
+}
+
+/* Subtle version */
+.glow-border-subtle::before {
+  background: conic-gradient(
+    from var(--angle),
+    transparent 80%,
+    rgba(52,152,219,0.3) 88%,
+    rgba(240,168,48,0.3) 94%,
+    transparent 100%
+  );
+}
